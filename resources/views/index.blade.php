@@ -8,7 +8,7 @@ if (app()->environment() != 'testing') {
 
 ?>
 
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -67,8 +67,8 @@ if (app()->environment() != 'testing') {
                 supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
                 onComplete: function(swaggerApi, swaggerUi){
                     @if(isset($requestHeaders))
-                    @foreach($requestHeaders as $requestKey => $requestValue)
-                    window.swaggerUi.api.clientAuthorizations.add("{{$requestKey}}", new SwaggerClient.ApiKeyAuthorization("{{$requestKey}}", "{{$requestValue}}", "header"));
+                            @foreach($requestHeaders as $requestKey => $requestValue)
+                        window.swaggerUi.api.clientAuthorizations.add("{{$requestKey}}", new SwaggerClient.ApiKeyAuthorization("{{$requestKey}}", "{{$requestValue}}", "header"));
                     @endforeach
                             @endif
 
@@ -98,21 +98,21 @@ if (app()->environment() != 'testing') {
                 showRequestHeaders: false
             });
 
-            function addApiKeyAuthorization(){
-                var key = $('#input_apiKey')[0].value;
+            function addBasicAuthorization(){
+                var key = $('#input_authorization')[0].value;
 
                 if ("{{$apiKeyInject}}" === "query") {
                     key = encodeURIComponent(key);
                 }
 
                 if(key && key.trim() != "") {
-                    var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("{{$apiKeyVar}}", key, "{{$apiKeyInject}}");
-                    window.swaggerUi.api.clientAuthorizations.add("{{$securityDefinition}}", apiKeyAuth);
+                    var auth =  "Basic " + window.btoa(key);
+                    window.swaggerUi.api.clientAuthorizations.add("basic", new SwaggerClient.ApiKeyAuthorization("Authorization", auth, "header"));
                 }
             }
 
-            $('#input_apiKey').change(function() {
-                addApiKeyAuthorization();
+            $('#input_authorization').change(function() {
+                addBasicAuthorization();
             });
 
             window.swaggerUi.load();
@@ -120,8 +120,8 @@ if (app()->environment() != 'testing') {
             // if you have an apiKey you would like to pre-populate on the page for demonstration purposes
             // just put it in the .env file, API_AUTH_TOKEN variable
             @if($apiKey)
-            $('#input_apiKey').val("{{$apiKey}}");
-            addApiKeyAuthorization();
+                $('#input_authorization').val("{{$apiKey}}");
+            addBasicAuthorization();
             @endif
         });
     </script>
@@ -133,7 +133,7 @@ if (app()->environment() != 'testing') {
         <a id="logo" href="http://swagger.io">swagger</a>
         <form id='api_selector'>
             <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
-            <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
+            <div class='input'><input placeholder="client:api_key" id="input_authorization" name="apiKey" type="text"/></div>
             <div class='input'><a id="explore" href="#" data-sw-translate>Explore</a></div>
         </form>
     </div>
